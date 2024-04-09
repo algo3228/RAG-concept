@@ -1,0 +1,30 @@
+version: "3.5"
+services:
+  embedder:
+    build:
+      context: fastapi_inference_labse
+    environment:
+      - DEVICE=cpu
+      - PORT=8908
+    ports:
+      - "8908:8908"
+    networks:
+      - default
+  search:
+    build:
+      context: search_app
+    links:
+      - "embedder"
+    environment:
+      EMBEDDER_ADDRESS: embedder:8908/embedding
+      MILVUS_ADDRESS: standalone:19530
+      GIGACHAT: <Gigachat credentials>
+      PORT: 8909
+    ports:
+      - "8909:8909"
+    networks:
+      - default
+networks:
+  default:
+    name: milvus
+    external: true
