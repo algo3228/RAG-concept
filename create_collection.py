@@ -39,35 +39,7 @@ if not client.has_collection(collection_name):
     print(f"Коллекция {collection_name} создана успешно.")
 
 
-
 client.create_index(
     collection_name=collection_name,
     index_params=index_params
 )
-
-#Генерация синтетических примеров
-# num_entities = 1000
-# vectors = np.random.random((num_entities, EMBEDDINGS_DIM)).astype(np.float32).tolist()
-# vectors: torch.Tensor = torch.load('embeddings.pt')
-# ids = list(range(vectors.shape[0] // 3))
-#
-# data = [
-#     {
-#         "id": idx,
-#         "vector": vector
-#     }
-#     for idx, vector in zip(ids, vectors[:vectors.shape[0] // 3, :].tolist())
-# ]
-#
-# # Вставка данных
-# mr = client.upsert(
-#     collection_name=collection_name,
-#     data=data,
-#     timeout=20,
-# )
-# # client.upsert()
-#
-# print(f"{len(ids)} векторов успешно загружено в коллекцию {collection_name}.")
-#
-# #ВАЖНО! Не забывать загружать коллекцию для поиска
-# client.load_collection(collection_name)
