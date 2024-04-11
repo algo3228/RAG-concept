@@ -10,6 +10,10 @@
    ```shell
    cd .. && docker-compose up -d --build
    ```
+   Дополнительно: Запуск с использованием GPU (требуется [nvidia container toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html))
+   ```shell
+   docker-compose -f docker-compose.yml -f docker-compose.gpu.yml up -d --build
+   ```
 3. Проверить запущенные контейнеры можно с помощью команды:
    ```shell
    docker-compose ps
