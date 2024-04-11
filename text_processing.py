@@ -1,3 +1,4 @@
+import uuid
 import requests
 import json
 from pymilvus import MilvusClient
@@ -8,28 +9,25 @@ EMBEDDER_ADDRESS = 'http://localhost:8908/embedding'
 client = MilvusClient(
     uri="http://localhost:19530"
 )
-COLLECTION_NAME = "LaBSE_embeddings_2"
+COLLECTION_NAME = "LaBSE_embeddings_3"
 client.load_collection(COLLECTION_NAME)
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=5000,
     chunk_overlap=200)
-global_id = 0
 
 
 def add_text(text: str):
-    global global_id
     texts = text_splitter.split_text(text)
     for chunk in texts:
         embedding = requests.post(EMBEDDER_ADDRESS, json={"query": chunk}).json()
         client.insert(
             collection_name=COLLECTION_NAME,
             data={
-                "id": global_id,
+                "id": str(uuid.uuid4()),
                 "text": chunk,
                 "vector": embedding
             },
         )
-        global_id += 1
 
 
 if __name__ == '__main__':

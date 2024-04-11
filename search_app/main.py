@@ -1,20 +1,19 @@
 import os
 
 import requests
-import torch
 import uvicorn
-from pymilvus import MilvusClient
 from fastapi import FastAPI
-from pydantic import BaseModel
 from langchain.chat_models.gigachat import GigaChat
-from langchain.schema import HumanMessage, SystemMessage, AIMessage
+from langchain.schema import HumanMessage, SystemMessage
+from pydantic import BaseModel
+from pymilvus import MilvusClient
 
 auth_gigachat = os.getenv('GIGACHAT')
 EMBEDDER_ADDRESS = f"http://{os.getenv('EMBEDDER_ADDRESS')}"
 MILVUS_ADDRESS = f"http://{os.getenv('MILVUS_ADDRESS')}"
 
 client = MilvusClient(uri=MILVUS_ADDRESS)
-COLLECTION_NAME = "LaBSE_embeddings_2"
+COLLECTION_NAME = "LaBSE_embeddings_3"
 client.load_collection(COLLECTION_NAME)
 
 llm = GigaChat(credentials=auth_gigachat, verify_ssl_certs=False)
