@@ -13,8 +13,8 @@ services:
   search:
     build:
       context: search_app
-    links:
-      - "embedder"
+    depends_on:
+      - embedder
     environment:
       EMBEDDER_ADDRESS: embedder:8908/embedding
       MILVUS_ADDRESS: standalone:19530
