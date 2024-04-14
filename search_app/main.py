@@ -17,6 +17,9 @@ COLLECTION_NAME = "LaBSE_embeddings_3"
 client.load_collection(COLLECTION_NAME)
 
 llm = GigaChat(credentials=auth_gigachat, verify_ssl_certs=False)
+system_message = SystemMessage(
+    content="Ты профессионально и объёмно отвечаешь на вопросы, используя свои собственные знания и контекст в сообщениях"
+)
 
 app = FastAPI()
 
@@ -30,18 +33,26 @@ class Response(BaseModel):
     document_ids: list[str]
 
 
-@app.post("/search", response_model=Response)
-def search(query: Query):
-    embedding = requests.post(EMBEDDER_ADDRESS, json={"query": query.query}).json()
+@app.post("/search/", response_model=Response)
+def search(query: Query, use_hyde: str = 'false'):
+    query_for_embedder = query.query
+    if use_hyde == 'true':
+        print("Using HyDE technique")
+        hypotetic_document = llm.invoke([
+            system_message,
+            HumanMessage(content=query.query)
+        ])
+        if hypotetic_document.response_metadata["finish_reason"] != 'blacklist':
+            query_for_embedder = hypotetic_document.content
+            print(f"Query for embedder: {query_for_embedder}")
+    embedding = requests.post(EMBEDDER_ADDRESS, json={"query": query_for_embedder}).json()
     search_result = client.search(COLLECTION_NAME, [embedding], limit=15, output_fields=['text'])
     context = "\n".join(
         [s["entity"]["text"] for s in search_result[0]]
     )
     doc_ids = [str(s["id"]) for s in search_result[0]]
     messages = [
-        SystemMessage(
-            content="Ты профессионально и объёмно отвечаешь на вопросы, используя свои собственные знания и контекст в сообщениях"
-        ),
+        system_message,
         HumanMessage(
             content=f"{context}\n\n Опираясь на предоставленную информацию ответь на вопрос:\n {query}"
         )
