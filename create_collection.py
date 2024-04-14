@@ -12,11 +12,11 @@ client = MilvusClient(
 schema = MilvusClient.create_schema(
     auto_id=False,
 )
-schema.add_field(field_name="id", datatype=DataType.INT64, is_primary=True)
+schema.add_field(field_name="id", datatype=DataType.VARCHAR, is_primary=True, max_length=100)
 schema.add_field(field_name="vector", datatype=DataType.FLOAT_VECTOR, dim=EMBEDDINGS_DIM)
 schema.add_field(field_name="text", datatype=DataType.VARCHAR, max_length=10000)
 
-collection_name = "LaBSE_embeddings_2"
+collection_name = "LaBSE_embeddings_3"
 
 # Задаем поисковый индекс по векторам
 index_params = MilvusClient.prepare_index_params()
